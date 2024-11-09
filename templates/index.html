@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Car Price Predictor</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="static/css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header text-center bg-primary text-white">
+            <h1>Car Price Predictor</h1>
+        </div>
+        <div class="card-body">
+            <p class="text-center lead">Enter the car details to estimate its price:</p>
+            <form id="predictForm" onsubmit="return false;">
+                <div class="form-group">
+                    <label for="company">Select Company:</label>
+                    <select class="form-control" id="company" name="company" required>
+                        {% for company in companies %}
+                        <option value="{{ company }}">{{ company }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="car_models">Select Model:</label>
+                    <select class="form-control" id="car_models" name="car_models" required>
+                        {% for model in car_models %}
+                        <option value="{{ model }}">{{ model }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="year">Year of Purchase:</label>
+                    <select class="form-control" id="year" name="year" required>
+                        {% for year in years %}
+                        <option value="{{ year }}">{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="fuel_type">Fuel Type:</label>
+                    <select class="form-control" id="fuel_type" name="fuel_type" required>
+                        {% for fuel in fuel_types %}
+                        <option value="{{ fuel }}">{{ fuel }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="kilo_driven">Kilometers Driven:</label>
+                    <input type="number" class="form-control" id="kilo_driven" name="kilo_driven" placeholder="Enter kilometers driven" required>
+                </div>
+                <button type="submit" class="btn btn-success btn-block" onclick="predictPrice()">Predict Price</button>
+            </form>
+            <br>
+            <div id="predictionResult" class="text-center mt-4"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function predictPrice() {
+        const formData = new FormData(document.getElementById('predictForm'));
+        $('#predictionResult').html("<p class='text-info'>Calculating...</p>");
+        
+        $.ajax({
+            type: 'POST',
+            url: '/predict',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                $('#predictionResult').html(`<h4 class="text-success">Predicted Price: ₹${response.prediction}</h4>`);
+            },
+            error: function() {
+                $('#predictionResult').html("<p class='text-danger'>Error predicting price. Please try again.</p>");
+            }
+        });
+    }
+</script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</body>
+</html>
